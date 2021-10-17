@@ -53,11 +53,11 @@ module.exports = {
 
   createEvent: async (args) => {
     const event = new Event({
-      title: args.eventInput.title,
-      description: args.eventInput.description,
-      price: +args.eventInput.price,
-      date: new Date(args.eventInput.date),
-      creator: "616b0dfe3525416587936326",
+      title: args.event.title,
+      description: args.event.description,
+      price: +args.event.price,
+      date: new Date(args.event.date),
+      creator: "616bc8cf92bc1b30bc9db2f6",
     });
     let createdEvent;
     try {
@@ -68,7 +68,7 @@ module.exports = {
         date: new Date(event._doc.date).toISOString(),
         creator: user.bind(this, result._doc.creator),
       };
-      const creator = await User.findById("616b0dfe3525416587936326");
+      const creator = await User.findById("616bc8cf92bc1b30bc9db2f6");
 
       if (!creator) {
         throw new Error("User not found.");
