@@ -1,7 +1,10 @@
 const { Event } = require("../../model/event");
 const { User } = require("../../model/user");
+const { Booking } = require("../../model/booking");
 const bcrypt = require("bcryptjs");
 
+//getting a list of events of a user
+//list of event ids are passed as arguments
 const events = async (eventIds) => {
   try {
     const events = await Event.find({ _id: { $in: eventIds } });
@@ -20,6 +23,7 @@ const events = async (eventIds) => {
   }
 };
 
+//getting a single user by user id
 const user = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -35,6 +39,7 @@ const user = async (userId) => {
 
 module.exports = {
   //contains a bundle of resolvers
+  //get events
   events: async () => {
     try {
       const events = await Event.find();
@@ -51,6 +56,7 @@ module.exports = {
     }
   },
 
+  //create events
   createEvent: async (args) => {
     const event = new Event({
       title: args.event.title,
@@ -83,6 +89,7 @@ module.exports = {
     }
   },
 
+  //create users
   createUser: async (args) => {
     try {
       const checkUserExist = await User.findOne({ email: args.user.email });
@@ -100,6 +107,48 @@ module.exports = {
 
         return result;
       }
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  //bookings
+  bookings: async () => {
+    try {
+      const bookings = await Booking.find();
+      return bookings.map((booking) => {
+        return {
+          ...booking._doc,
+          _id: booking.id,
+          createdAt: new Date(booking._doc.createdAt).toISOString(),
+          updatedAt: new Date(booking._doc.updatedAt).toISOString(),
+        };
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  //create a booking
+  bookEvent: async (args) => {
+    try {
+      const fetchedEvent = await Event.findOne({ _id: args.eventId });
+      const newBooking = new Booking({
+        user: "616bc8cf92bc1b30bc9db2f6",
+        events: fetchedEvent,
+      });
+
+      const result = await newBooking.save();
+      console.log(result)
+ 
+        console.log("++++ result.id ", result.id);
+        return {
+          ...result._doc,
+          _id: result.id,
+          createdAt: new Date(result._doc.createdAt).toISOString(),
+          updatedAt: new Date(result._doc.updatedAt).toISOString(),
+        };
+      
     } catch (error) {
       throw error;
     }
