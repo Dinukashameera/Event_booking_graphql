@@ -4,7 +4,6 @@ const { User } = require("../../model/user");
 
 //getting a list of events of a user
 //list of event ids are passed as arguments
-
 const events = async (eventIds) => {
     try {
       const events = await Event.find({ _id: { $in: eventIds } });
