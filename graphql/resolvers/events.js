@@ -1,17 +1,9 @@
 const { Event } = require("../../model/event");
 const { User } = require("../../model/user");
 const { dateToString } = require("../../helpers/date");
-const { user } = require("./merge");
+const { transformEvent} = require("./merge");
 
 //refactoring
-const transformEvent = (event) => {
-  return {
-    ...event._doc,
-    _id: event.id,
-    date: new Date(event._doc.date).toISOString(),
-    creator: user.bind(this, event.creator),
-  };
-};
 
 module.exports = {
   //contains a bundle of resolvers
@@ -28,7 +20,11 @@ module.exports = {
   },
 
   //create events
-  createEvent: async (args) => {
+  createEvent: async (args, req) => {
+    console.log(args)
+    if(!req.isAuth){
+      return new Error("Unauthenticated")
+    }
     const event = new Event({
       title: args.event.title,
       description: args.event.description,

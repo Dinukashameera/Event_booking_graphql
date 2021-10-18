@@ -1,14 +1,6 @@
+const { dateToString } = require("../../helpers/date");
 const { Event } = require("../../model/event");
 const { User } = require("../../model/user");
-
-const transformEvent = (event) => {
-    return {
-      ...event._doc,
-      _id: event.id,
-      date: new Date(event._doc.date).toISOString(),
-      creator: user.bind(this, event.creator),
-    };
-  };
 
 //getting a list of events of a user
 //list of event ids are passed as arguments
@@ -48,7 +40,26 @@ const events = async (eventIds) => {
     }
   };
   
+//refactoring
+const transformEvent = (event) => {
+  return {
+    ...event._doc,
+    _id: event.id,
+    date: new Date(event._doc.date).toISOString(),
+    creator: user.bind(this, event.creator),
+  };
+};
 
-  exports.user = user
-  exports.singleEvent = singleEvent
-  exports.events = events
+const transformBooking = booking => {
+  return {
+    ...booking._doc,
+    _id: booking.id,
+    user: user.bind(this, booking.user),
+    event: singleEvent.bind(this, booking.events),
+    createdAt: dateToString(booking._doc.createdAt),
+    updatedAt: dateToString(booking._doc.updatedAt),
+  }
+}
+  exports.transformEvent = transformEvent
+  exports.transformBooking = transformBooking
+ 

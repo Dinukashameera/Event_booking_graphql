@@ -1,6 +1,7 @@
 const { User } = require("../../model/user");
 const { dateToString } = require("../../helpers/date");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   //create users
@@ -23,6 +24,36 @@ module.exports = {
       }
     } catch (error) {
       throw error;
+    }
+  },
+
+  //logginh
+  login: async ({ email, password }) => {
+    try {
+      const checkUser = await User.findOne({ email: email });
+      console.log(checkUser);
+      if (!checkUser) {
+        throw new Error("User doesnt exist");
+      }
+      const isEqual = await bcrypt.compare(password, checkUser.password);
+      if (!isEqual) {
+        throw new Error("Invlaid incorrect");
+      }
+      const token = jwt.sign(
+        {
+          userId: checkUser.id,
+          email: checkUser.email,
+        },
+        "sometoken",
+        { expiresIn: "1h" }
+      );
+      return {
+        userId: checkUser.id,
+        token: token,
+        tokenExpiration: 1,
+      };
+    } catch (error) {
+      console.log(error);
     }
   },
 };

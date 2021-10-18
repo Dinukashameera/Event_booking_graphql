@@ -1,34 +1,14 @@
 const { Event } = require("../../model/event");
 const { Booking } = require("../../model/booking");
-const { dateToString } = require("../../helpers/date");
-const { user,singleEvent } = require("./merge");
-
-
-//refactoring
-const transformEvent = (event) => {
-  return {
-    ...event._doc,
-    _id: event.id,
-    date: new Date(event._doc.date).toISOString(),
-    creator: user.bind(this, event.creator),
-  };
-};
-
-const transformBooking = booking => {
-  return {
-    ...booking._doc,
-    _id: booking.id,
-    user: user.bind(this, booking.user),
-    event: singleEvent.bind(this, booking.events),
-    createdAt: dateToString(booking._doc.createdAt),
-    updatedAt: dateToString(booking._doc.updatedAt),
-  }
-}
-
+const { transformEvent, transformBooking } = require("./merge");
 
 module.exports = {
   //bookings
-  bookings: async () => {
+  bookings: async (args,req) => {
+    if(!req.isAuth){
+      return new Error("Unauthenticated")
+    }
+
     try {
       const bookings = await Booking.find();
       return bookings.map((booking) => {
@@ -40,7 +20,11 @@ module.exports = {
   },
 
   //create a booking
-  bookEvent: async (args) => {
+  bookEvent: async (args,req) => {
+    if(!req.isAuth){
+      return new Error("Unauthenticated")
+    }
+
     try {
       const fetchedEvent = await Event.findOne({ _id: args.eventId });
       const newBooking = new Booking({
@@ -55,7 +39,11 @@ module.exports = {
   },
 
   //canceling a booking
-  cancelBooking: async (args) => {
+  cancelBooking: async (args,req) => {
+    if(!req.isAuth){
+      return new Error("Unauthenticated")
+    }
+
     try {
       const booking = await Booking.findById(args.bookingId).populate("events");
       console.log(booking.events);
