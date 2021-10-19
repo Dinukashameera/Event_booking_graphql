@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const app = express();
 
 app.use(express.json());
+
 app.use(isAuth)
 app.use(
   "/graphql",
@@ -26,4 +27,4 @@ mongoose
   .then(() => console.log("connected to mongo DB"))
   .catch((error) => console.error(error));
 
-app.listen(3000);
+app.listen(5000);

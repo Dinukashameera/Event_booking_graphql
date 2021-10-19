@@ -7,6 +7,7 @@ module.exports = {
   //create users
   createUser: async (args) => {
     try {
+      console.log(args)
       const checkUserExist = await User.findOne({ email: args.user.email });
       if (checkUserExist) {
         throw new Error("User already exist");
